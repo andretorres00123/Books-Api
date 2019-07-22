@@ -3,7 +3,14 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const app = express();
-const db = mongoose.connect('mongodb://localhost/bookAPI');
+
+if (process.env.ENV === 'Test') {
+  const db = mongoose.connect('mongodb://localhost/bookAPI_Test');
+} else {
+  const db = mongoose.connect('mongodb://localhost/bookAPI-prod');
+}
+
+
 const port = process.env.PORT || 3000;
 const Book = require('./models/bookModel');
 const bookRouter = require('./routes/bookRouter')(Book);
@@ -17,6 +24,8 @@ app.get('/', (req, res) => {
   res.send('Welcome from Nodemon!');
 });
 
-app.listen(port, () => {
+app.server = app.listen(port, () => {
   console.log(`Running on port ${port}`);
 });
+
+module.exports = app;
